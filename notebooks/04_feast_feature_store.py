@@ -185,7 +185,10 @@ else:
 import pandas as pd
 entity_df = pd.DataFrame({
     "user_id": ["u_001", "u_002", "u_003"],
-    "event_timestamp": [NOW - timedelta(hours=2), NOW - timedelta(hours=1), NOW],
+    # Each event_timestamp must be at/after that user's feature row (u_001 was
+    # written at NOW-1h). Asking for u_001 at NOW-2h has no valid value yet, so
+    # the PIT join correctly drops the row instead of leaking the future one.
+    "event_timestamp": [NOW - timedelta(minutes=30), NOW - timedelta(hours=1), NOW],
 })
 
 historical = fs.get_historical_features(
